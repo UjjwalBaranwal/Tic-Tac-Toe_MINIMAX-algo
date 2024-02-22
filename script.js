@@ -41,13 +41,63 @@ const turnClick = (el) => {
   }
 };
 const bestSpot = () => {
-  console.log(
-    `this is the call from the bestspot function ${emptySquare()[0]}`
-  );
-  return emptySquare()[0];
+  //   console.log(
+  //     `this is the call from the bestspot function ${emptySquare()[0]}`
+  //   );
+  //   return emptySquare()[0];
+  return minimax(board, aiP).index;
+};
+const minimax = (newBoard, player) => {
+  const availSpots = emptySquare(newBoard);
+  if (determineWin(newBoard, player)) {
+    return { score: -10 };
+  } else if (determineWin(newBoard, aiP)) {
+    return { score: 10 };
+  } else if (availSpots.length === 0) {
+    return { score: 0 };
+  }
+  var moves = [];
+  for (var i = 0; i < availSpots.length; i++) {
+    var move = {};
+    move.index = newBoard[availSpots[i]];
+    newBoard[availSpots[i]] = player;
+
+    if (player == aiP) {
+      var result = minimax(newBoard, humanP);
+      move.score = result.score;
+    } else {
+      var result = minimax(newBoard, aiP);
+      move.score = result.score;
+    }
+
+    newBoard[availSpots[i]] = move.index;
+
+    moves.push(move);
+  }
+
+  var bestMove;
+  if (player === aiP) {
+    var bestScore = -10000;
+    for (var i = 0; i < moves.length; i++) {
+      if (moves[i].score > bestScore) {
+        bestScore = moves[i].score;
+        bestMove = i;
+      }
+    }
+  } else {
+    var bestScore = 10000;
+    for (var i = 0; i < moves.length; i++) {
+      if (moves[i].score < bestScore) {
+        bestScore = moves[i].score;
+        bestMove = i;
+      }
+    }
+  }
+
+  return moves[bestMove];
 };
 const emptySquare = () => {
-  console.log(board.filter((el) => typeof el === "number"));
+  //   console.log(board.filter((el) => typeof el === "number"));
   return board.filter((el) => typeof el === "number");
 };
 const checkTie = () => {
